@@ -1,0 +1,42 @@
+# Oracle AI Database 26ai Free — CDB FREE, PDB FREEPDB1
+# Cổng ứng dụng: localhost:1521/FREEPDB1
+#
+# Biến môi trường lấy từ .env (xem .env.example).
+# Đặt cả ORACLE_PWD và ORACLE_PASSWORD cùng giá trị để tương thích
+# image chính thức và gvenzl/oracle-free.
+
+services:
+  db:
+    image: ${ORACLE_IMAGE:-container-registry.oracle.com/database/free:latest}
+    container_name: zoo-oracle
+    ports:
+      - "${ORACLE_PORT:-1521}:1521"
+    environment:
+      ORACLE_PWD: ${ORACLE_PWD:-ZooOracle_Demo1}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:-ZooOracle_Demo1}
+    volumes:
+      - zoo_oradata:/opt/oracle/oradata
+      - ./db:/db:ro
+      - ./admin:/admin:ro
+      - ./backup:/backup
+    healthcheck:
+      # Kiểm tra PDB FREEPDB1 sẵn sàng nhận kết nối
+      test:
+        [
+          "CMD-SHELL",
+          "echo 'SELECT 1 FROM dual;' | sqlplus -s sys/${ORACLE_PWD:-ZooOracle_Demo1}@FREEPDB1 as sysdba | grep -q 1",
+        ]
+      interval: 30s
+      timeout: 15s
+      retries: 40
+      start_period: 180s
+    restart: unless-stopped
+
+  # API sẽ bổ sung ở Giai đoạn 4; giữ chỗ để docker compose up db+api sau này
+  # api:
+  #   build: ./zoo-api
+  #   ...
+
+volumes:
+  zoo_oradata:
+    name: zoo_oradata

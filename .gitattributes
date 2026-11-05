@@ -1,0 +1,19 @@
+# Quan trọng cho Windows: tránh CRLF phá script bash / SQL
+* text=auto eol=lf
+
+*.sh  text eol=lf
+*.sql text eol=lf
+*.md  text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.env.example text eol=lf
+
+# PowerShell giữ LF cũng được; Git trên Windows vẫn chạy tốt
+*.ps1 text eol=lf
+
+# Binary
+*.dmp binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
